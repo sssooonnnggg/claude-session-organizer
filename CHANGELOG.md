@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.3
+
+- Drag sessions onto a group (or Ungrouped) to organize them.
+- Show the session count in each group header.
+
 ## 0.6.2
 
 - Expand the Pinned and Today groups by default; collapse the others.

@@ -2,7 +2,7 @@
   "name": "claude-session-organizer",
   "displayName": "Claude Session Organizer",
   "description": "Organize your Claude Code sessions: pin, group, color, rename, and search them from a sidebar.",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "publisher": "sssooonnnggg",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -26,7 +26,7 @@
     },
     "views": {
       "claudeSessionOrganizer": [
-        { "id": "claudeSessionOrganizer.sessions", "name": "Sessions" }
+        { "id": "claudeSessionOrganizer.sessions", "name": "📌 Sessions" }
       ]
     },
     "commands": [

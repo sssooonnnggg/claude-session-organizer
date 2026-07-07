@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.2
+
+- Expand the Pinned and Today groups by default; collapse the others.
+- Add a 📌 to the view title.
+
 ## 0.6.1
 
 - Renamed to **Claude Session Organizer** (formerly "Toolkit for Claude Code") to better reflect its focus on organizing sessions.

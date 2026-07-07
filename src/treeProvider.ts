@@ -27,7 +27,9 @@ export class SessionsTreeProvider implements vscode.TreeDataProvider<Node> {
       return new vscode.TreeItem(node.label, vscode.TreeItemCollapsibleState.None);
     }
     if (node.kind === "group") {
-      const item = new vscode.TreeItem(node.label, vscode.TreeItemCollapsibleState.Expanded);
+      const expanded = node.key === "pinned" || node.key === "today";
+      const state = expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
+      const item = new vscode.TreeItem(node.label, state);
       item.contextValue = "group";
       return item;
     }

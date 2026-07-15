@@ -62,6 +62,7 @@ export function registerCommands(
         await stores.emojis.clear(node.meta.sessionId);
         await stores.colors.clear(node.meta.sessionId);
         await stores.groups.clear(node.meta.sessionId);
+        await stores.archive.remove(node.meta.sessionId);
       } catch (e) {
         void vscode.window.showErrorMessage(`Could not delete session: ${e instanceof Error ? e.message : String(e)}`);
       }
@@ -131,6 +132,12 @@ export function registerCommands(
         await stores.groups.set(id, choice);
       }
       refresh();
+    }),
+    vscode.commands.registerCommand("claudeSessionOrganizer.sessions.archive", async (node: { meta?: { sessionId: string } }) => {
+      if (node?.meta) { await stores.archive.add(node.meta.sessionId); refresh(); }
+    }),
+    vscode.commands.registerCommand("claudeSessionOrganizer.sessions.unarchive", async (node: { meta?: { sessionId: string } }) => {
+      if (node?.meta) { await stores.archive.remove(node.meta.sessionId); refresh(); }
     }),
   );
 }

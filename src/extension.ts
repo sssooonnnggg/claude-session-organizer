@@ -5,7 +5,7 @@ import { encodeProjectDir } from "./pathEncoder";
 import { scanSessions } from "./sessionScanner";
 import { PinStore } from "./pinStore";
 import { NameStore } from "./nameStore";
-import { EmojiStore, ColorStore, GroupStore } from "./sessionStores";
+import { EmojiStore, ColorStore, GroupStore, ArchiveStore } from "./sessionStores";
 import type { SessionStores } from "./sessionStores";
 import { SessionsTreeProvider } from "./treeProvider";
 import { registerCommands } from "./commands";
@@ -25,6 +25,7 @@ export function activate(context: vscode.ExtensionContext): void {
     emojis: new EmojiStore(context.globalState),
     colors: new ColorStore(context.globalState),
     groups: new GroupStore(context.globalState),
+    archive: new ArchiveStore(context.globalState),
   };
   const load = () => (dir ? scanSessions(dir) : Promise.resolve([]));
   const provider = new SessionsTreeProvider(load, stores);

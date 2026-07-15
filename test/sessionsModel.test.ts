@@ -96,3 +96,17 @@ describe("buildGroups custom groups", () => {
     expect(g[0].key).toBe("today");
   });
 });
+
+describe("buildGroups archived", () => {
+  it("moves archived sessions into a trailing Archived group, out of other groups", () => {
+    const sessions = [s("a", startOfToday + 3), s("b", startOfToday + 2)];
+    const g = buildGroups(sessions, new Set(["a"]), now, () => undefined, new Set(["a"]));
+    expect(g.map((x) => x.key)).toEqual(["today", "archived"]);
+    expect(g[0].items.map((i) => i.sessionId)).toEqual(["b"]);
+    expect(g[1].items.map((i) => i.sessionId)).toEqual(["a"]);
+  });
+  it("omits the Archived group when nothing is archived", () => {
+    const g = buildGroups([s("a", startOfToday + 1)], new Set<string>(), now);
+    expect(g.some((x) => x.key === "archived")).toBe(false);
+  });
+});

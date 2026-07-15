@@ -24,24 +24,27 @@ const DATE_GROUPS: { key: DateBucket; label: string }[] = [
 ];
 
 /**
- * Build an ordered list of groups. Pinned sessions come first (if any) and never
- * appear elsewhere. If any non-pinned session has a custom group, switch to group
- * mode (custom groups alphabetically, then Ungrouped); otherwise use date buckets.
- * Items within every group are mtime-descending.
+ * Build an ordered list of groups. Archived sessions are removed from the normal
+ * groups and collected into a trailing "Archived" group. Pinned sessions come first
+ * (if any) and never appear elsewhere. If any non-pinned session has a custom group,
+ * switch to group mode (custom groups alphabetically, then Ungrouped); otherwise use
+ * date buckets. Items within every group are mtime-descending.
  */
 export function buildGroups(
   sessions: SessionMeta[],
   pinned: Set<string>,
   nowMs: number,
   groupOf: (sessionId: string) => string | undefined = () => undefined,
+  archived: Set<string> = new Set<string>(),
 ): SessionGroup[] {
   const sorted = [...sessions].sort((a, b) => b.mtimeMs - a.mtimeMs);
+  const live = sorted.filter((s) => !archived.has(s.sessionId));
   const groups: SessionGroup[] = [];
 
-  const pinnedItems = sorted.filter((s) => pinned.has(s.sessionId));
+  const pinnedItems = live.filter((s) => pinned.has(s.sessionId));
   if (pinnedItems.length > 0) groups.push({ key: "pinned", label: "Pinned", items: pinnedItems });
 
-  const rest = sorted.filter((s) => !pinned.has(s.sessionId));
+  const rest = live.filter((s) => !pinned.has(s.sessionId));
 
   if (rest.some((s) => groupOf(s.sessionId))) {
     const names = [...new Set(rest.map((s) => groupOf(s.sessionId)).filter((g): g is string => !!g))].sort();
@@ -57,5 +60,9 @@ export function buildGroups(
       if (items.length > 0) groups.push({ key, label, items });
     }
   }
+
+  const archivedItems = sorted.filter((s) => archived.has(s.sessionId));
+  if (archivedItems.length > 0) groups.push({ key: "archived", label: "Archived", items: archivedItems });
+
   return groups;
 }

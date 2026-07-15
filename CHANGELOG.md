@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+
+- Archive sessions: right-click → Archive moves a session into a collapsed "Archived" group at the bottom (keeping its pin, group, color, and emoji); Unarchive restores it.
+
 ## 0.6.3
 
 - Drag sessions onto a group (or Ungrouped) to organize them.

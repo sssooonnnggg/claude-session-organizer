@@ -2,7 +2,7 @@
   "name": "claude-session-organizer",
   "displayName": "Claude Session Organizer",
   "description": "Organize your Claude Code sessions: pin, group, color, rename, and search them from a sidebar.",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "publisher": "sssooonnnggg",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -41,7 +41,9 @@
       { "command": "claudeSessionOrganizer.sessions.search", "title": "Search Sessions", "category": "Claude Session Organizer", "icon": "$(search)" },
       { "command": "claudeSessionOrganizer.sessions.setColor", "title": "Set Color", "category": "Claude Session Organizer", "icon": "$(symbol-color)" },
       { "command": "claudeSessionOrganizer.sessions.setEmoji", "title": "Set Emoji", "category": "Claude Session Organizer", "icon": "$(smiley)" },
-      { "command": "claudeSessionOrganizer.sessions.setGroup", "title": "Set Group", "category": "Claude Session Organizer", "icon": "$(folder)" }
+      { "command": "claudeSessionOrganizer.sessions.setGroup", "title": "Set Group", "category": "Claude Session Organizer", "icon": "$(folder)" },
+      { "command": "claudeSessionOrganizer.sessions.archive", "title": "Archive Session", "category": "Claude Session Organizer", "icon": "$(archive)" },
+      { "command": "claudeSessionOrganizer.sessions.unarchive", "title": "Unarchive Session", "category": "Claude Session Organizer", "icon": "$(inbox)" }
     ],
     "menus": {
       "commandPalette": [
@@ -54,7 +56,9 @@
         { "command": "claudeSessionOrganizer.sessions.delete", "when": "false" },
         { "command": "claudeSessionOrganizer.sessions.setColor", "when": "false" },
         { "command": "claudeSessionOrganizer.sessions.setEmoji", "when": "false" },
-        { "command": "claudeSessionOrganizer.sessions.setGroup", "when": "false" }
+        { "command": "claudeSessionOrganizer.sessions.setGroup", "when": "false" },
+        { "command": "claudeSessionOrganizer.sessions.archive", "when": "false" },
+        { "command": "claudeSessionOrganizer.sessions.unarchive", "when": "false" }
       ],
       "view/title": [
         { "command": "claudeSessionOrganizer.sessions.search", "when": "view == claudeSessionOrganizer.sessions", "group": "navigation@1" },
@@ -68,6 +72,8 @@
         { "command": "claudeSessionOrganizer.sessions.setColor", "when": "view == claudeSessionOrganizer.sessions && viewItem =~ /Session$/", "group": "2_customize@1" },
         { "command": "claudeSessionOrganizer.sessions.setEmoji", "when": "view == claudeSessionOrganizer.sessions && viewItem =~ /Session$/", "group": "2_customize@2" },
         { "command": "claudeSessionOrganizer.sessions.setGroup", "when": "view == claudeSessionOrganizer.sessions && viewItem =~ /Session$/", "group": "2_customize@3" },
+        { "command": "claudeSessionOrganizer.sessions.archive", "when": "view == claudeSessionOrganizer.sessions && (viewItem == unpinnedSession || viewItem == pinnedSession)", "group": "3_archive" },
+        { "command": "claudeSessionOrganizer.sessions.unarchive", "when": "view == claudeSessionOrganizer.sessions && viewItem == archivedSession", "group": "3_archive" },
         { "command": "claudeSessionOrganizer.sessions.copyId", "when": "view == claudeSessionOrganizer.sessions && viewItem =~ /Session$/", "group": "5_copy" },
         { "command": "claudeSessionOrganizer.sessions.copyPath", "when": "view == claudeSessionOrganizer.sessions && viewItem =~ /Session$/", "group": "5_copy" }
       ]

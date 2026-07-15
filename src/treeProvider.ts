@@ -10,7 +10,7 @@ const DND_MIME = "application/vnd.code.tree.claudeSessionOrganizer";
 
 type Node =
   | { kind: "group"; key: string; label: string; children: SessionMeta[] }
-  | { kind: "session"; meta: SessionMeta; pinned: boolean }
+  | { kind: "session"; meta: SessionMeta; pinned: boolean; archived: boolean }
   | { kind: "empty"; label: string };
 
 export class SessionsTreeProvider
@@ -72,8 +72,8 @@ export class SessionsTreeProvider
     const item = new vscode.TreeItem(sessionLabel(node.meta, this.stores), vscode.TreeItemCollapsibleState.None);
     item.description = formatRelative(node.meta.mtimeMs, this.now());
     item.tooltip = `${node.meta.title}\n${node.meta.sessionId}`;
-    item.contextValue = node.pinned ? "pinnedSession" : "unpinnedSession";
-    item.iconPath = new vscode.ThemeIcon(node.pinned ? "pinned" : "comment-discussion");
+    item.contextValue = node.archived ? "archivedSession" : node.pinned ? "pinnedSession" : "unpinnedSession";
+    item.iconPath = new vscode.ThemeIcon(node.archived ? "archive" : node.pinned ? "pinned" : "comment-discussion");
     item.command = { command: "claudeSessionOrganizer.sessions.open", title: "Open Session", arguments: [node.meta.sessionId] };
     return item;
   }
@@ -82,7 +82,13 @@ export class SessionsTreeProvider
     if (node) {
       if (node.kind === "group") {
         const pinnedSet = new Set(this.stores.pins.list());
-        return node.children.map((meta) => ({ kind: "session", meta, pinned: pinnedSet.has(meta.sessionId) }));
+        const archivedSet = new Set(this.stores.archive.list());
+        return node.children.map((meta) => ({
+          kind: "session",
+          meta,
+          pinned: pinnedSet.has(meta.sessionId),
+          archived: archivedSet.has(meta.sessionId),
+        }));
       }
       return [];
     }
@@ -93,6 +99,7 @@ export class SessionsTreeProvider
       new Set(this.stores.pins.list()),
       this.now(),
       (id) => this.stores.groups.get(id),
+      new Set(this.stores.archive.list()),
     );
     return groups.map((g) => ({ kind: "group", key: g.key, label: g.label, children: g.items }));
   }

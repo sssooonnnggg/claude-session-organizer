@@ -3,7 +3,7 @@ import { displayName } from "../src/display";
 import { sessionLabel } from "../src/display";
 import { NameStore } from "../src/nameStore";
 import { PinStore } from "../src/pinStore";
-import { EmojiStore, ColorStore, GroupStore } from "../src/sessionStores";
+import { EmojiStore, ColorStore, GroupStore, ArchiveStore } from "../src/sessionStores";
 import type { SessionStores } from "../src/sessionStores";
 import type { MementoLike, SessionMeta } from "../src/types";
 
@@ -40,6 +40,7 @@ function makeStores(): SessionStores {
     emojis: new EmojiStore(m),
     colors: new ColorStore(m),
     groups: new GroupStore(m),
+    archive: new ArchiveStore(m),
   };
 }
 

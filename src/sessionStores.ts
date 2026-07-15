@@ -1,5 +1,6 @@
 import type { MementoLike } from "./types";
 import { KeyedStore } from "./keyedStore";
+import { SetStore } from "./setStore";
 import { NameStore } from "./nameStore";
 import { PinStore } from "./pinStore";
 
@@ -12,6 +13,9 @@ export class ColorStore extends KeyedStore {
 export class GroupStore extends KeyedStore {
   constructor(memento: MementoLike) { super(memento, "sessionGroups"); }
 }
+export class ArchiveStore extends SetStore {
+  constructor(memento: MementoLike) { super(memento, "archivedSessions"); }
+}
 
 /** All per-session stores, passed together to the tree and commands. */
 export interface SessionStores {
@@ -20,4 +24,5 @@ export interface SessionStores {
   emojis: EmojiStore;
   colors: ColorStore;
   groups: GroupStore;
+  archive: ArchiveStore;
 }

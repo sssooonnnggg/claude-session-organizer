@@ -2,7 +2,7 @@
   "name": "claude-session-organizer",
   "displayName": "Claude Session Organizer",
   "description": "Organize your Claude Code sessions: pin, group, color, rename, and search them from a sidebar.",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "publisher": "sssooonnnggg",
   "license": "MIT",
   "icon": "media/icon.png",
@@ -30,6 +30,7 @@
       ]
     },
     "commands": [
+      { "command": "claudeSessionOrganizer.sessions.new", "title": "New Session", "category": "Claude Session Organizer", "icon": "$(add)" },
       { "command": "claudeSessionOrganizer.sessions.refresh", "title": "Refresh Sessions", "category": "Claude Session Organizer", "icon": "$(refresh)" },
       { "command": "claudeSessionOrganizer.sessions.open", "title": "Open Session", "category": "Claude Session Organizer" },
       { "command": "claudeSessionOrganizer.sessions.pin", "title": "Pin Session", "category": "Claude Session Organizer", "icon": "$(pin)" },
@@ -61,6 +62,7 @@
         { "command": "claudeSessionOrganizer.sessions.unarchive", "when": "false" }
       ],
       "view/title": [
+        { "command": "claudeSessionOrganizer.sessions.new", "when": "view == claudeSessionOrganizer.sessions", "group": "navigation@0" },
         { "command": "claudeSessionOrganizer.sessions.search", "when": "view == claudeSessionOrganizer.sessions", "group": "navigation@1" },
         { "command": "claudeSessionOrganizer.sessions.refresh", "when": "view == claudeSessionOrganizer.sessions", "group": "navigation@2" }
       ],

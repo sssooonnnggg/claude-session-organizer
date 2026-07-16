@@ -6,6 +6,22 @@ import type { SessionStores } from "./sessionStores";
 import { SessionsTreeProvider } from "./treeProvider";
 
 const OFFICIAL_OPEN = "claude-vscode.editor.open";
+const OFFICIAL_NEW = "claude-vscode.newConversation";
+
+/** Start a new Claude Code session via the official extension (with a fallback). */
+export async function openNewSession(): Promise<void> {
+  try {
+    await vscode.commands.executeCommand(OFFICIAL_NEW);
+  } catch {
+    try {
+      await vscode.commands.executeCommand(OFFICIAL_OPEN);
+    } catch {
+      void vscode.window.showErrorMessage(
+        "Could not start a new session. Make sure the official Claude Code extension is installed and enabled.",
+      );
+    }
+  }
+}
 
 /** Open a session by reusing the official Claude Code command. */
 export async function openSession(sessionId: string): Promise<void> {
@@ -30,6 +46,7 @@ export function registerCommands(
   const openAndTrack = async (id: string) => { await openSession(id); track(id); };
   context.subscriptions.push(
     vscode.commands.registerCommand("claudeSessionOrganizer.sessions.open", (sessionId: string) => openAndTrack(sessionId)),
+    vscode.commands.registerCommand("claudeSessionOrganizer.sessions.new", () => openNewSession()),
     vscode.commands.registerCommand("claudeSessionOrganizer.sessions.refresh", () => refresh()),
     vscode.commands.registerCommand("claudeSessionOrganizer.sessions.pin", async (node: { meta?: { sessionId: string } }) => {
       if (node?.meta) { await pins.pin(node.meta.sessionId); refresh(); }

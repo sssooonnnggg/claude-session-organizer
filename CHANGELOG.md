@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2
+
+- Add a New Session (➕) button in the view title to start a fresh Claude Code session.
+
 ## 0.7.1
 
 - Fix: expanded groups no longer collapse when the list refreshes (e.g. while a session is being written). Each group's expand/collapse state is now preserved across refreshes.

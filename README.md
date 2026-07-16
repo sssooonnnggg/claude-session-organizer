@@ -25,6 +25,7 @@ Quality-of-life enhancements for the official [Claude Code](https://marketplace.
 - 🔗 **Pin sync** — pinning a session's editor tab also pins it in the list (one-way).
 - 🖐️ **Drag** a session onto a group (or Ungrouped) to organize it; group headers show a count.
 - 🗄️ **Archive** sessions into a collapsed group at the bottom (their settings are kept); unarchive to restore.
+- ➕ **New Session** button in the view title to start a fresh Claude Code session.
 
 ## Requirements
 

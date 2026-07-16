@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
+- Fix: expanded groups no longer collapse when the list refreshes (e.g. while a session is being written). Each group's expand/collapse state is now preserved across refreshes.
+
 ## 0.7.0
 
 - Archive sessions: right-click → Archive moves a session into a collapsed "Archived" group at the bottom (keeping its pin, group, color, and emoji); Unarchive restores it.

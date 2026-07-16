@@ -30,13 +30,14 @@ export function activate(context: vscode.ExtensionContext): void {
   const load = () => (dir ? scanSessions(dir) : Promise.resolve([]));
   const provider = new SessionsTreeProvider(load, stores);
 
-  context.subscriptions.push(
-    vscode.window.createTreeView("claudeSessionOrganizer.sessions", {
-      treeDataProvider: provider,
-      dragAndDropController: provider,
-      canSelectMany: true,
-    }),
-  );
+  const treeView = vscode.window.createTreeView("claudeSessionOrganizer.sessions", {
+    treeDataProvider: provider,
+    dragAndDropController: provider,
+    canSelectMany: true,
+  });
+  treeView.onDidExpandElement((e) => { if (e.element.kind === "group") provider.setGroupExpanded(e.element.key, true); });
+  treeView.onDidCollapseElement((e) => { if (e.element.kind === "group") provider.setGroupExpanded(e.element.key, false); });
+  context.subscriptions.push(treeView);
   const tabSync = registerTabSync(context, stores.pins, provider);
   registerCommands(context, stores, provider, load, tabSync.track);
 

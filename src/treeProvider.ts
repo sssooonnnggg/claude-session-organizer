@@ -22,6 +22,9 @@ export class SessionsTreeProvider
   readonly dragMimeTypes = [DND_MIME];
   readonly dropMimeTypes = [DND_MIME];
 
+  /** Remembered per-group expand/collapse state (by group key). */
+  private readonly expansion = new Map<string, boolean>();
+
   constructor(
     private readonly load: () => Promise<SessionMeta[]>,
     private readonly stores: SessionStores,
@@ -29,6 +32,11 @@ export class SessionsTreeProvider
   ) {}
 
   refresh(): void { this._onDidChange.fire(); }
+
+  /** Record a group's expand/collapse so a refresh keeps it, instead of resetting to the default. */
+  setGroupExpanded(key: string, expanded: boolean): void {
+    this.expansion.set(key, expanded);
+  }
 
   handleDrag(source: readonly Node[], dataTransfer: vscode.DataTransfer): void {
     const ids = source
@@ -63,13 +71,16 @@ export class SessionsTreeProvider
       return new vscode.TreeItem(node.label, vscode.TreeItemCollapsibleState.None);
     }
     if (node.kind === "group") {
-      const expanded = node.key === "pinned" || node.key === "today";
+      const def = node.key === "pinned" || node.key === "today";
+      const expanded = this.expansion.get(node.key) ?? def;
       const state = expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
       const item = new vscode.TreeItem(`${node.label} (${node.children.length})`, state);
+      item.id = node.key;
       item.contextValue = "group";
       return item;
     }
     const item = new vscode.TreeItem(sessionLabel(node.meta, this.stores), vscode.TreeItemCollapsibleState.None);
+    item.id = node.meta.sessionId;
     item.description = formatRelative(node.meta.mtimeMs, this.now());
     item.tooltip = `${node.meta.title}\n${node.meta.sessionId}`;
     item.contextValue = node.archived ? "archivedSession" : node.pinned ? "pinnedSession" : "unpinnedSession";

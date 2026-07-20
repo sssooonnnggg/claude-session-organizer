@@ -25,20 +25,28 @@ export function registerTabSync(
   context: vscode.ExtensionContext,
   pins: PinStore,
   provider: SessionsTreeProvider,
+  reveal: (sessionId: string) => void,
 ): TabSync {
   const tabToSession = new WeakMap<vscode.Tab, string>();
   const pinnedState = new WeakMap<vscode.Tab, boolean>();
+  let lastRevealed: string | undefined;
 
   context.subscriptions.push(
     vscode.window.tabGroups.onDidChangeTabs(async (e) => {
       for (const tab of [...e.opened, ...e.changed]) {
         if (!isClaudeTab(tab)) continue;
+        const id = tabToSession.get(tab);
+
+        // switching to a session's tab selects it in the list
+        if (tab.isActive && id && id !== lastRevealed) {
+          lastRevealed = id;
+          reveal(id);
+        }
+
         const was = pinnedState.get(tab) ?? false;
         const now = tab.isPinned;
         pinnedState.set(tab, now);
-        if (!isPinTransition(was, now)) continue;
-        const id = tabToSession.get(tab);
-        if (id && !pins.has(id)) {
+        if (isPinTransition(was, now) && id && !pins.has(id)) {
           await pins.pin(id);
           provider.refresh();
         }

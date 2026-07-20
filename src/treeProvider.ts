@@ -25,6 +25,9 @@ export class SessionsTreeProvider
   /** Remembered per-group expand/collapse state (by group key). */
   private readonly expansion = new Map<string, boolean>();
 
+  /** sessionId -> its tree node and the group node it lives under (rebuilt on each root load). */
+  private readonly index = new Map<string, { node: Node; parent: Node }>();
+
   constructor(
     private readonly load: () => Promise<SessionMeta[]>,
     private readonly stores: SessionStores,
@@ -92,26 +95,50 @@ export class SessionsTreeProvider
   async getChildren(node?: Node): Promise<Node[]> {
     if (node) {
       if (node.kind === "group") {
-        const pinnedSet = new Set(this.stores.pins.list());
-        const archivedSet = new Set(this.stores.archive.list());
-        return node.children.map((meta) => ({
-          kind: "session",
-          meta,
-          pinned: pinnedSet.has(meta.sessionId),
-          archived: archivedSet.has(meta.sessionId),
-        }));
+        return node.children
+          .map((meta) => this.index.get(meta.sessionId)?.node)
+          .filter((n): n is Node => n !== undefined);
       }
       return [];
     }
     const sessions = await this.load();
+    this.index.clear();
     if (sessions.length === 0) return [{ kind: "empty", label: "No sessions for this workspace" }];
+
+    const pinnedSet = new Set(this.stores.pins.list());
+    const archivedSet = new Set(this.stores.archive.list());
     const groups = buildGroups(
       sessions,
-      new Set(this.stores.pins.list()),
+      pinnedSet,
       this.now(),
       (id) => this.stores.groups.get(id),
-      new Set(this.stores.archive.list()),
+      archivedSet,
     );
-    return groups.map((g) => ({ kind: "group", key: g.key, label: g.label, children: g.items }));
+
+    const roots: Node[] = [];
+    for (const g of groups) {
+      const groupNode: Node = { kind: "group", key: g.key, label: g.label, children: g.items };
+      roots.push(groupNode);
+      for (const meta of g.items) {
+        const sessionNode: Node = {
+          kind: "session",
+          meta,
+          pinned: pinnedSet.has(meta.sessionId),
+          archived: archivedSet.has(meta.sessionId),
+        };
+        this.index.set(meta.sessionId, { node: sessionNode, parent: groupNode });
+      }
+    }
+    return roots;
+  }
+
+  /** Required for TreeView.reveal to expand the ancestor chain. */
+  getParent(node: Node): Node | undefined {
+    return node.kind === "session" ? this.index.get(node.meta.sessionId)?.parent : undefined;
+  }
+
+  /** The tree node for a session, once the tree has been built. */
+  nodeFor(sessionId: string): Node | undefined {
+    return this.index.get(sessionId)?.node;
   }
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.3
+
+- Opening or switching to a session now reveals it in the list: its group expands and the row is selected.
+
 ## 0.7.2
 
 - Add a New Session (➕) button in the view title to start a fresh Claude Code session.

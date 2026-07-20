@@ -40,10 +40,11 @@ export function registerCommands(
   provider: SessionsTreeProvider,
   load: () => Promise<SessionMeta[]>,
   track: (sessionId: string) => void,
+  reveal: (sessionId: string) => void,
 ): void {
   const { pins, names } = stores;
   const refresh = () => provider.refresh();
-  const openAndTrack = async (id: string) => { await openSession(id); track(id); };
+  const openAndTrack = async (id: string) => { await openSession(id); track(id); reveal(id); };
   context.subscriptions.push(
     vscode.commands.registerCommand("claudeSessionOrganizer.sessions.open", (sessionId: string) => openAndTrack(sessionId)),
     vscode.commands.registerCommand("claudeSessionOrganizer.sessions.new", () => openNewSession()),

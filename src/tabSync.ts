@@ -30,27 +30,39 @@ export function registerTabSync(
   const tabToSession = new WeakMap<vscode.Tab, string>();
   const pinnedState = new WeakMap<vscode.Tab, boolean>();
   let lastRevealed: string | undefined;
+  let revealTimer: ReturnType<typeof setTimeout> | undefined;
+
+  // Reveal the *globally* active Claude tab (not per-group isActive), debounced so
+  // transient tab states while a session is opening settle before we select a row.
+  const scheduleActiveReveal = (): void => {
+    if (revealTimer) clearTimeout(revealTimer);
+    revealTimer = setTimeout(() => {
+      const active = vscode.window.tabGroups.activeTabGroup.activeTab;
+      if (!active || !isClaudeTab(active)) return;
+      const id = tabToSession.get(active);
+      if (id && id !== lastRevealed) {
+        lastRevealed = id;
+        reveal(id);
+      }
+    }, 80);
+  };
 
   context.subscriptions.push(
     vscode.window.tabGroups.onDidChangeTabs(async (e) => {
       for (const tab of [...e.opened, ...e.changed]) {
         if (!isClaudeTab(tab)) continue;
-        const id = tabToSession.get(tab);
-
-        // switching to a session's tab selects it in the list
-        if (tab.isActive && id && id !== lastRevealed) {
-          lastRevealed = id;
-          reveal(id);
-        }
-
         const was = pinnedState.get(tab) ?? false;
         const now = tab.isPinned;
         pinnedState.set(tab, now);
-        if (isPinTransition(was, now) && id && !pins.has(id)) {
-          await pins.pin(id);
-          provider.refresh();
+        if (isPinTransition(was, now)) {
+          const id = tabToSession.get(tab);
+          if (id && !pins.has(id)) {
+            await pins.pin(id);
+            provider.refresh();
+          }
         }
       }
+      scheduleActiveReveal();
     }),
   );
 
@@ -61,6 +73,8 @@ export function registerTabSync(
         tabToSession.set(tab, sessionId);
         pinnedState.set(tab, tab.isPinned);
       }
+      // We reveal this session explicitly on open; suppress a duplicate tab-reveal.
+      lastRevealed = sessionId;
     },
   };
 }

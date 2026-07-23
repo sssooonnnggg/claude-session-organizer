@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.4
+
+- Fix: clicking a session in the list could select a different one. The list↔active-tab sync now follows the globally active tab (debounced) instead of misfiring on per-group active state.
+
 ## 0.7.3
 
 - Opening or switching to a session now reveals it in the list: its group expands and the row is selected.

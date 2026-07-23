@@ -25,27 +25,9 @@ export function registerTabSync(
   context: vscode.ExtensionContext,
   pins: PinStore,
   provider: SessionsTreeProvider,
-  reveal: (sessionId: string) => void,
 ): TabSync {
   const tabToSession = new WeakMap<vscode.Tab, string>();
   const pinnedState = new WeakMap<vscode.Tab, boolean>();
-  let lastRevealed: string | undefined;
-  let revealTimer: ReturnType<typeof setTimeout> | undefined;
-
-  // Reveal the *globally* active Claude tab (not per-group isActive), debounced so
-  // transient tab states while a session is opening settle before we select a row.
-  const scheduleActiveReveal = (): void => {
-    if (revealTimer) clearTimeout(revealTimer);
-    revealTimer = setTimeout(() => {
-      const active = vscode.window.tabGroups.activeTabGroup.activeTab;
-      if (!active || !isClaudeTab(active)) return;
-      const id = tabToSession.get(active);
-      if (id && id !== lastRevealed) {
-        lastRevealed = id;
-        reveal(id);
-      }
-    }, 80);
-  };
 
   context.subscriptions.push(
     vscode.window.tabGroups.onDidChangeTabs(async (e) => {
@@ -62,7 +44,6 @@ export function registerTabSync(
           }
         }
       }
-      scheduleActiveReveal();
     }),
   );
 
@@ -73,8 +54,6 @@ export function registerTabSync(
         tabToSession.set(tab, sessionId);
         pinnedState.set(tab, tab.isPinned);
       }
-      // We reveal this session explicitly on open; suppress a duplicate tab-reveal.
-      lastRevealed = sessionId;
     },
   };
 }

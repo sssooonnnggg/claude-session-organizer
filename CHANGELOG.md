@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.5
+
+- Fix: clicking a session in the list no longer has its selection stolen by another. The active-tab→list sync (added in 0.7.3) fought with clicking to open — when opening a session didn't focus its editor tab, the list jumped to whatever tab was active. Removed it; opening or searching a session still reveals and selects it.
+
 ## 0.7.4
 
 - Fix: clicking a session in the list could select a different one. The list↔active-tab sync now follows the globally active tab (debounced) instead of misfiring on per-group active state.

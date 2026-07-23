@@ -49,7 +49,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   };
 
-  const tabSync = registerTabSync(context, stores.pins, provider, reveal);
+  const tabSync = registerTabSync(context, stores.pins, provider);
   registerCommands(context, stores, provider, load, tabSync.track, reveal);
 
   if (dir) {

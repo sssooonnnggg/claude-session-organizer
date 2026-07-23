@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.6
+
+- Remove the list ↔ editor-tab selection sync entirely (it kept fighting with clicking to open). Clicking a session just opens it now; the list selection is left to VS Code's native behavior, so it no longer jumps to a different session.
+
 ## 0.7.5
 
 - Fix: clicking a session in the list no longer has its selection stolen by another. The active-tab→list sync (added in 0.7.3) fought with clicking to open — when opening a session didn't focus its editor tab, the list jumped to whatever tab was active. Removed it; opening or searching a session still reveals and selects it.

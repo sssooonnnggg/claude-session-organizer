@@ -39,18 +39,8 @@ export function activate(context: vscode.ExtensionContext): void {
   treeView.onDidCollapseElement((e) => { if (e.element.kind === "group") provider.setGroupExpanded(e.element.key, false); });
   context.subscriptions.push(treeView);
 
-  const reveal = async (sessionId: string): Promise<void> => {
-    const node = provider.nodeFor(sessionId);
-    if (!node) return;
-    try {
-      await treeView.reveal(node, { select: true, expand: true });
-    } catch {
-      // the view may be hidden or the node may have gone away — nothing to reveal
-    }
-  };
-
   const tabSync = registerTabSync(context, stores.pins, provider);
-  registerCommands(context, stores, provider, load, tabSync.track, reveal);
+  registerCommands(context, stores, provider, load, tabSync.track);
 
   if (dir) {
     const watcher = vscode.workspace.createFileSystemWatcher(
